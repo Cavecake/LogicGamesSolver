@@ -55,6 +55,7 @@ class Sudoku():
                 x1 = 0
                 y1 = y + 1
             return self.subSolver
+    
         for i in range(1,10):
             if self.valid_move(x,y,i):
                 x1 = x +1
