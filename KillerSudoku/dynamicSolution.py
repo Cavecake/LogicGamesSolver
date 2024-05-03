@@ -24,12 +24,12 @@ class KillerSuoku(sudoku.Sudoku):
 class SudokuGUI():
     screen_res = (900,900)
 
-    SCREEN_COLOR = (0.5,0.5,0.5,1)
-    GRID_COLOR = (50,255,30)
-    SOLUTION_COLOR = (50,255,50,255)
-    NUMBER_COLOR = (0,0,0)
-    SELECTION_COLOR = (255,255,255)
-    SELECTION_OPACITY = 50
+    SCREEN_COLOR = (1,1,1,1)
+    GRID_COLOR = (70,70,70)
+    SOLUTION_COLOR = (0,0,204,255)
+    NUMBER_COLOR = (0,0,0,255)
+    SELECTION_COLOR = (0,0,0,255)
+    SELECTION_OPACITY = 70
 
     def __init__(self) -> None:
         self.selectedCells = []
@@ -91,18 +91,18 @@ class SudokuGUI():
             for y in range(9):
                 number = self.grid[y][x]
                 if number != 0:
-                    self.drawLetter(x,y,labels,number,self.NUMBER_COLOR)
+                    self.drawLetter(x,8-y,labels,number,self.NUMBER_COLOR)
                     continue
                 if self.solved:
                     number = self.solved_grid[y][x]
-                    self.drawLetter(x,y,labels,number,self.SOLUTION_COLOR)
+                    self.drawLetter(x,8-y,labels,number,self.SOLUTION_COLOR)
         return labels
     
     def drawSelection(self):
         rects = []
         for cell in self.selectedCells:
             x, y = cell
-            rect = (46+x*90, 46+ y*90,
+            rect = (46+x*90, 46+ (8-y)*90,
                     88, 88)
             rect = pyglet.shapes.Rectangle(rect[0], rect[1], rect[2], rect[3],self.SELECTION_COLOR, batch=self.batch)
             rect.opacity = self.SELECTION_OPACITY
@@ -135,8 +135,8 @@ class SudokuGUI():
         x /= 90
         y /= 90
         if x > 8 or y > 8 or y < 0 or x < 0:
-            x, y = None, None
-        return x, y
+            x = None
+        return x, 8-y
 
     def on_mouse_press(self,x, y, button, modifiers):
         x, y = self.calcCellCoord(x,y)
@@ -155,6 +155,13 @@ class SudokuGUI():
     def on_key_press(self,symbol, modifiers):
         if modifiers & pyglet.window.key.MOD_SHIFT:
             self.setMutliselect(True)
+
+        if symbol in [pyglet.window.key.ENTER, pyglet.window.key.RETURN]:
+            self.solve()
+
+        if symbol == pyglet.window.key.DELETE or symbol == pyglet.window.key.BACKSPACE:
+            self.removeNumbers()
+
         number = pyglet.window.key.symbol_string(symbol)
         number = number[-1]
         if number in ["1","2","3","4","5","6","7","8","9"]:
@@ -171,10 +178,18 @@ class SudokuGUI():
         if modifiers & pyglet.window.key.MOD_SHIFT or key[1:] == "SHIFT":
             self.setMutliselect(False)
 
+    def removeNumbers(self):
+        for cell in self.selectedCells:
+            x, y = cell
+            self.grid[y][x] = 0
+
     def setNumber(self,number):
         for cell in self.selectedCells:
             x, y = cell
-            self.grid[y][x] = number
+            if self.grid[y][x] == number:
+                self.grid[y][x] = 0
+            else:
+                self.grid[y][x] = number
 
     def setMutliselect(self,state):
         self.multiselect = state
@@ -196,5 +211,4 @@ class SudokuGUI():
             x, y = cell
             self.grid[y][x] = 0
 gui = SudokuGUI()
-gui.solve()
 pyglet.app.run()
