@@ -1,3 +1,4 @@
+import copy
 class Sudoku():
 
     blocks = [
@@ -8,7 +9,7 @@ class Sudoku():
     def __init_blocks(self):
         pass
     def __init__(self, grid) -> None:
-        self.grid = grid
+        self.grid = copy.deepcopy(grid)
         self.org_grid = grid
         self.__init_blocks()
     def valid_move(self, cell_x, cell_y, number):
