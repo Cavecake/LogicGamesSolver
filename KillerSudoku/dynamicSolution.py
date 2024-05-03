@@ -24,6 +24,7 @@ class KillerSuoku(sudoku.Sudoku):
 class SudokuGUI():
     screen_res = (900,900)
     def __init__(self) -> None:
+        self.selectedCells = []
         self.grid = []
         for x in range(9):
             self.grid.append([])
@@ -96,6 +97,24 @@ class SudokuGUI():
         self.solved_grid = sud.dynamicSolver()
         self.solved = True
 
+    def setNumber(self,number):
+        for cell in self.selectedCells:
+            x, y = cell
+            self.grid[y][x] = number
+
+    def selectCell(self,x,y):
+        if [x,y] not in self.selectedCells:
+            self.selectedCells.append([x,y])
+
+    def deselectCell(self,x,y):
+        if [x,y] in self.selectedCells:
+            index = self.selectedCells.index([x,y])
+            del self.selectedCells[index]
+
+    def eraseNumber(self):
+        for cell in self.selectedCells:
+            x, y = cell
+            self.grid[y][x] = 0
 gui = SudokuGUI()
 gui.solve()
 pyglet.app.run()
