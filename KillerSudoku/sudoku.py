@@ -53,11 +53,7 @@ class Sudoku():
             if x1 == 9:
                 x1 = 0
                 y1 = y + 1
-            if self.subSolver(x1,y1):
-                return True
-            else:
-                self.grid[y][x] = 0
-
+            return self.subSolver
         for i in range(1,10):
             if self.valid_move(x,y,i):
                 x1 = x +1
