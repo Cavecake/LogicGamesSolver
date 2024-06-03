@@ -86,5 +86,7 @@ class KillerSudokuGUI(SudokuGUI):
                 temp = [cell for cell in group[1] if cell not in self.selectedCells]
                 self.selectedCells = self.selectedCells + temp
         return super().selectCell(x, y)
-gui = KillerSudokuGUI()
-gui.start()
+
+if __name__ == "__main__":
+    gui = KillerSudokuGUI()
+    gui.start()

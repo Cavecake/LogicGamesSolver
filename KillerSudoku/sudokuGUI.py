@@ -204,3 +204,7 @@ class SudokuGUI():
         for cell in self.selectedCells:
             x, y = cell
             self.grid[y][x] = 0
+
+if __name__ == "__main__":
+    gui = SudokuGUI()
+    gui.start()
