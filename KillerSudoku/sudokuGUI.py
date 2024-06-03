@@ -1,25 +1,6 @@
-import sudoku
 import pyglet
+import sudoku
 import copy
-
-class KillerSuoku(sudoku.Sudoku):
-    def __init__(self, grid, cell_groups) -> None:
-        super().__init__(grid)
-        self.cell_groups = cell_groups
-    def valid_move(self, cell_x, cell_y, number):
-        for group in self.cell_groups:
-            if not [cell_x, cell_y] in group:
-                continue
-
-            summe = 0
-            for cell in group[1:]:
-                if self.grid[cell[1]][cell[0]] == number:
-                    return False
-                summe += self.grid[cell[1]][cell[0]]
-            if summe + number > group[0]:
-                return False
-        return super().valid_move(cell_x, cell_y, number)
-    
 
 class SudokuGUI():
     screen_res = (900,900)
@@ -54,9 +35,11 @@ class SudokuGUI():
         self.on_key_release = self.gameWindow.event(self.on_key_release)
         self.on_mouse_drag = self.gameWindow.event(self.on_mouse_drag)
 
-    
+    def start(self):
+        pyglet.app.run()
+
     def drawGrid(self):
-        
+        # creates a 9*9 grid
         offset = 45
         lines = []
         WIDTH = 3
@@ -78,14 +61,16 @@ class SudokuGUI():
         
         return lines
 
-    def drawLetter(self, x, y, labels, number, color):
+    def drawLetter(self, x, y, labels, number, color, font_size = 28, offset = [-14,-14]):
+        # helper function
         label = pyglet.text.Label(str(number), 
                           font_name ='Times New Roman', 
-                          font_size = 28, 
-                          x = 90 * (x+1) -14 , y = 90 * (y+1) - 14, batch= self.batch, color=color) 
+                          font_size = font_size, 
+                          x = 90 * (x+1) + offset[0] , y = 90 * (y+1) + offset[1], batch= self.batch, color=color) 
         labels.append(label)
 
     def drawSudokuNumbers(self):
+        # populates the sudoku grid with the numbers
         labels = []
         for x in range(9):
             for y in range(9):
@@ -99,6 +84,7 @@ class SudokuGUI():
         return labels
     
     def drawSelection(self):
+        # draws the selected cells
         rects = []
         for cell in self.selectedCells:
             x, y = cell
@@ -118,7 +104,7 @@ class SudokuGUI():
     
     def on_draw(self):
         self.gameWindow.clear()
-        objects = self.drawElements()
+        objects = self.drawElements() # return necessary, because otherwise, pointer from batch will be nullptr
         self.batch.draw()
 
     def solve(self):
@@ -142,6 +128,13 @@ class SudokuGUI():
         x, y = self.calcCellCoord(x,y)
         if x == None:
             return
+        
+        # selects and deselects cells based on mouse input
+        # right Button -> deselect
+        # left button -> toggle selection
+        # if single select mode only select one at a time
+        # multi selection mode can be toggle using the shift key
+        # dragging selects all
         if button == pyglet.window.mouse.LEFT:
             if [int(x), int(y)] in self.selectedCells:
                 self.deselectCell(int(x),int(y))
@@ -178,6 +171,7 @@ class SudokuGUI():
         if modifiers & pyglet.window.key.MOD_SHIFT or key[1:] == "SHIFT":
             self.setMutliselect(False)
 
+    # Helper functions, to set variables
     def removeNumbers(self):
         for cell in self.selectedCells:
             x, y = cell
@@ -210,5 +204,3 @@ class SudokuGUI():
         for cell in self.selectedCells:
             x, y = cell
             self.grid[y][x] = 0
-gui = SudokuGUI()
-pyglet.app.run()
